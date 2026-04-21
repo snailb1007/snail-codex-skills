@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pragmatic C# SOLID"
+  short_description: "Pragmatic SOLID and design review for C#"
+  default_prompt: "Use $csharp-solid-pragmatic to review this C# design for SOLID violations without overengineering it."

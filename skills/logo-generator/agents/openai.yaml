@@ -1,0 +1,4 @@
+interface:
+  display_name: "Logo Generator"
+  short_description: "Generate logos and brand showcases"
+  default_prompt: "Use $logo-generator to create several logo concepts and polished showcase assets for my product."

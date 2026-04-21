@@ -1,0 +1,4 @@
+interface:
+  display_name: "MAUI MVVM"
+  short_description: "Build and refactor .NET MAUI MVVM code"
+  default_prompt: "Use $maui-mvvm to build or refactor a .NET MAUI feature with MVVM bindings and commands."

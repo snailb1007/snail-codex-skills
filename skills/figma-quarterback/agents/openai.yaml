@@ -1,0 +1,4 @@
+interface:
+  display_name: "Figma Quarterback"
+  short_description: "Quarterback precise Figma-to-code flows"
+  default_prompt: "Use $figma-quarterback to plan the safest Figma-to-code workflow for this request."

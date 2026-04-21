@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Background Library</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            transition: opacity 0.3s ease;
+        }
+        .container.hidden { opacity: 0; pointer-events: none; }
+        h1 {
+            text-align: center;
+            font-weight: 300;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 0.75rem;
+            opacity: 0.5;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 40px;
+        }
+        .card {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .card:hover { transform: translateY(-4px); }
+        canvas { width: 100%; height: 100%; display: block; }
+        .logo-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .logo { width: 100px; height: 100px; }
+        .label {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            z-index: 10;
+        }
+        .meta {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            z-index: 10;
+            text-align: right;
+        }
+        .fullscreen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .fullscreen.active {
+            display: block;
+            opacity: 1;
+        }
+        .fullscreen canvas {
+            width: 100vw;
+            height: 100vh;
+        }
+        .fullscreen .logo { width: 200px; height: 200px; }
+        .fullscreen .label {
+            bottom: 40px;
+            left: 40px;
+            font-size: 1rem;
+        }
+        .fullscreen .meta {
+            top: 40px;
+            right: 40px;
+            font-size: 0.85rem;
+        }
+        .close-btn {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: 48px;
+            height: 48px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .close-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+        .close-btn::before,
+        .close-btn::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: #fff;
+        }
+        .close-btn::before { transform: rotate(45deg); }
+        .close-btn::after { transform: rotate(-45deg); }
+    </style>
+</head>
+<body>
+    <div class="container" id="grid-view">
+        <h1>WebGL Background Library</h1>
+        <div class="subtitle">6 Dynamic Styles — Click to Fullscreen</div>
+        <div class="grid">
+            <div class="card" data-bg="led">
+                <canvas id="canvas-led"></canvas>
+                <div class="logo-container"><svg class="logo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><g fill="#000000"><circle cx="60" cy="42" r="2.5"/><circle cx="68" cy="42" r="2.5"/><circle cx="60" cy="50" r="2.5"/><circle cx="68" cy="50" r="2.5"/><circle cx="60" cy="58" r="2.5"/><circle cx="68" cy="58" r="2.5"/></g></svg></div>
+                <div class="label">LED Matrix</div>
+                <div class="meta">Digital Grid<br/>Adaptive Color</div>
+            </div>
+            <div class="card" data-bg="fluid">
+                <canvas id="canvas-fluid"></canvas>
+                <div class="logo-container"><svg class="logo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><g fill="#1a0a00"><circle cx="60" cy="42" r="2.5"/><circle cx="68" cy="42" r="2.5"/><circle cx="60" cy="50" r="2.5"/><circle cx="68" cy="50" r="2.5"/><circle cx="60" cy="58" r="2.5"/><circle cx="68" cy="58" r="2.5"/></g></svg></div>
+                <div class="label">Fluid Warping</div>
+                <div class="meta">Domain Warping<br/>Adaptive Color</div>
+            </div>
+            <div class="card" data-bg="fabric">
+                <canvas id="canvas-fabric"></canvas>
+                <div class="logo-container"><svg class="logo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><g fill="#000000"><circle cx="60" cy="42" r="2.5"/><circle cx="68" cy="42" r="2.5"/><circle cx="60" cy="50" r="2.5"/><circle cx="68" cy="50" r="2.5"/><circle cx="60" cy="58" r="2.5"/><circle cx="68" cy="58" r="2.5"/></g></svg></div>
+                <div class="label">Fabric Wave</div>
+                <div class="meta">Silk Undulation<br/>Cloth Flow</div>
+            </div>
+            <div class="card" data-bg="corner">
+                <canvas id="canvas-corner"></canvas>
+                <div class="logo-container"><svg class="logo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><g fill="#000000"><circle cx="60" cy="42" r="2.5"/><circle cx="68" cy="42" r="2.5"/><circle cx="60" cy="50" r="2.5"/><circle cx="68" cy="50" r="2.5"/><circle cx="60" cy="58" r="2.5"/><circle cx="68" cy="58" r="2.5"/></g></svg></div>
+                <div class="label">Off-Center Ripple</div>
+                <div class="meta">Corner Ripple<br/>Asymmetric</div>
+            </div>
+            <div class="card" data-bg="dispersion">
+                <canvas id="canvas-dispersion"></canvas>
+                <div class="logo-container"><svg class="logo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#FFFFFF"/><g fill="#1a1a1a"><circle cx="60" cy="42" r="2.5"/><circle cx="68" cy="42" r="2.5"/><circle cx="60" cy="50" r="2.5"/><circle cx="68" cy="50" r="2.5"/><circle cx="60" cy="58" r="2.5"/><circle cx="68" cy="58" r="2.5"/></g></svg></div>
+                <div class="label">Holographic Dispersion</div>
+                <div class="meta">Chromatic<br/>Iridescence</div>
+            </div>
+            <div class="card" data-bg="spiral">
+                <canvas id="canvas-spiral"></canvas>
+                <div class="logo-container"><svg class="logo" viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" fill="#1A1A1A"/><g fill="#FFFFFF"><circle cx="60" cy="42" r="2.5"/><circle cx="68" cy="42" r="2.5"/><circle cx="60" cy="50" r="2.5"/><circle cx="68" cy="50" r="2.5"/><circle cx="60" cy="58" r="2.5"/><circle cx="68" cy="58" r="2.5"/></g></svg></div>
+                <div class="label">Spiral Vortex</div>
+                <div class="meta">Rotating<br/>Angular Flow</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen" id="fullscreen-view">
+        <div class="close-btn" id="close-btn"></div>
+        <canvas id="canvas-fullscreen"></canvas>
+        <div class="logo-container">
+            <svg class="logo" viewBox="0 0 100 100" id="fullscreen-logo">
+                <circle cx="50" cy="50" r="32" fill="#FFFFFF"/>
+                <g fill="#000000">
+                    <circle cx="60" cy="42" r="2.5"/>
+                    <circle cx="68" cy="42" r="2.5"/>
+                    <circle cx="60" cy="50" r="2.5"/>
+                    <circle cx="68" cy="50" r="2.5"/>
+                    <circle cx="60" cy="58" r="2.5"/>
+                    <circle cx="68" cy="58" r="2.5"/>
+                </g>
+            </svg>
+        </div>
+        <div class="label" id="fullscreen-label">LED Matrix</div>
+        <div class="meta" id="fullscreen-meta">Digital Grid<br/>Adaptive Color</div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', () => {
+                const bgType = card.dataset.bg;
+                document.getElementById('fullscreen-label').textContent = card.querySelector('.label').textContent;
+                document.getElementById('fullscreen-meta').innerHTML = card.querySelector('.meta').innerHTML;
+                document.getElementById('grid-view').classList.add('hidden');
+                document.getElementById('fullscreen-view').classList.add('active');
+                console.log('Selected background:', bgType);
+            });
+        });
+
+        document.getElementById('close-btn').addEventListener('click', () => {
+            document.getElementById('fullscreen-view').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('grid-view').classList.remove('hidden');
+            }, 400);
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && document.getElementById('fullscreen-view').classList.contains('active')) {
+                document.getElementById('close-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
